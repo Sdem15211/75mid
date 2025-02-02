@@ -15,6 +15,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  challenges    Challenge[]
   // Optional for WebAuthn support
   Authenticator Authenticator[]
  
@@ -75,4 +76,66 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
  
   @@id([userId, credentialID])
+}
+
+// Challenge Models
+model Challenge {
+  id                String    @id @default(cuid())
+  userId            String
+  startDate         DateTime
+  endDate           DateTime?
+  status            String    @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED, PAUSED
+  restDaysLeft      Int       @default(11)
+  completedDays     Int       @default(0)            // Track number of completed days
+  completionPercent Float     @default(0)            // Track overall completion percentage
+  
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  days              Day[]
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Day {
+  id          String    @id @default(cuid())
+  date        DateTime
+  challengeId String
+  isRestDay   Boolean   @default(false)
+  isComplete  Boolean   @default(false)  // Track if all tasks for the day are complete
+  
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  completions TaskCompletion[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([challengeId, date])
+  @@index([challengeId])
+}
+
+model TaskCompletion {
+  id          String    @id @default(cuid())
+  dayId       String
+  taskType    TaskType
+  completed   Boolean   @default(false)
+  notes       String?   // For workout descriptions or other notes
+  
+  day         Day       @relation(fields: [dayId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([dayId])
+}
+
+enum TaskType {
+  WORKOUT_1
+  WORKOUT_2
+  WATER_INTAKE
+  READING
+  HEALTHY_DIET
+  NO_ALCOHOL
+  SLEEP_GOAL
 }
