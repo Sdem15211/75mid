@@ -5,42 +5,49 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { TaskType, TASK_LABELS } from "@/lib/challenge-utils";
 
 interface DailyChecklistProps {
   currentDay: number;
 }
 
-// Mock data structure
-interface DayData {
+type WorkoutData = {
+  completed: boolean;
+  description: string;
+};
+
+type OtherTaskType = "WATER_INTAKE" | "READING" | "HEALTHY_DIET" | "SLEEP_GOAL";
+
+type FormData = {
   isRestDay: boolean;
-  workout1: { completed: boolean; description: string };
-  workout2: { completed: boolean; description: string };
-  water: boolean;
-  reading: boolean;
-  diet: boolean;
-  alcohol: boolean;
-  sleep: boolean;
-}
+  workouts: {
+    WORKOUT_1: WorkoutData;
+    WORKOUT_2: WorkoutData;
+  };
+  tasks: Record<OtherTaskType, boolean>;
+};
 
 export function DailyChecklist({ currentDay }: DailyChecklistProps) {
   const [date, setDate] = useState<Date>(new Date());
-  const [isRestDay, setIsRestDay] = useState(false);
-  const [formData, setFormData] = useState<DayData>({
+  const [formData, setFormData] = useState<FormData>({
     isRestDay: false,
-    workout1: { completed: false, description: "" },
-    workout2: { completed: false, description: "" },
-    water: false,
-    reading: false,
-    diet: false,
-    alcohol: false,
-    sleep: false,
+    workouts: {
+      WORKOUT_1: { completed: false, description: "" },
+      WORKOUT_2: { completed: false, description: "" },
+    },
+    tasks: {
+      WATER_INTAKE: false,
+      READING: false,
+      HEALTHY_DIET: false,
+      SLEEP_GOAL: false,
+    },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+    console.log("Form data:", formData);
   };
 
   const isToday = isSameDay(date, new Date());
@@ -75,7 +82,7 @@ export function DailyChecklist({ currentDay }: DailyChecklistProps) {
           </div>
         </div>
 
-        {!isRestDay ? (
+        {!formData.isRestDay ? (
           <div className="space-y-6">
             {/* Workout tasks */}
             <Card className="overflow-hidden border rounded-lg">
@@ -84,34 +91,40 @@ export function DailyChecklist({ currentDay }: DailyChecklistProps) {
                   {/* Workout 1 */}
                   <div className="flex items-start gap-4">
                     <Checkbox
-                      id="workout1"
-                      checked={formData.workout1.completed}
+                      id="WORKOUT_1"
+                      checked={formData.workouts.WORKOUT_1.completed}
                       onCheckedChange={(checked) =>
                         setFormData((prev) => ({
                           ...prev,
-                          workout1: {
-                            ...prev.workout1,
-                            completed: checked as boolean,
+                          workouts: {
+                            ...prev.workouts,
+                            WORKOUT_1: {
+                              ...prev.workouts.WORKOUT_1,
+                              completed: checked as boolean,
+                            },
                           },
                         }))
                       }
                     />
                     <div className="flex-1">
                       <Label
-                        htmlFor="workout1"
+                        htmlFor="WORKOUT_1"
                         className="text-base font-medium"
                       >
-                        Workout 1
+                        {TASK_LABELS.WORKOUT_1}
                       </Label>
                       <Textarea
                         placeholder="Beschrijf je workout..."
-                        value={formData.workout1.description}
+                        value={formData.workouts.WORKOUT_1.description}
                         onChange={(e) =>
                           setFormData((prev) => ({
                             ...prev,
-                            workout1: {
-                              ...prev.workout1,
-                              description: e.target.value,
+                            workouts: {
+                              ...prev.workouts,
+                              WORKOUT_1: {
+                                ...prev.workouts.WORKOUT_1,
+                                description: e.target.value,
+                              },
                             },
                           }))
                         }
@@ -123,34 +136,40 @@ export function DailyChecklist({ currentDay }: DailyChecklistProps) {
                   {/* Workout 2 */}
                   <div className="flex items-start gap-4">
                     <Checkbox
-                      id="workout2"
-                      checked={formData.workout2.completed}
+                      id="WORKOUT_2"
+                      checked={formData.workouts.WORKOUT_2.completed}
                       onCheckedChange={(checked) =>
                         setFormData((prev) => ({
                           ...prev,
-                          workout2: {
-                            ...prev.workout2,
-                            completed: checked as boolean,
+                          workouts: {
+                            ...prev.workouts,
+                            WORKOUT_2: {
+                              ...prev.workouts.WORKOUT_2,
+                              completed: checked as boolean,
+                            },
                           },
                         }))
                       }
                     />
                     <div className="flex-1">
                       <Label
-                        htmlFor="workout2"
+                        htmlFor="WORKOUT_2"
                         className="text-base font-medium"
                       >
-                        Workout 2
+                        {TASK_LABELS.WORKOUT_2}
                       </Label>
                       <Textarea
                         placeholder="Beschrijf je workout..."
-                        value={formData.workout2.description}
+                        value={formData.workouts.WORKOUT_2.description}
                         onChange={(e) =>
                           setFormData((prev) => ({
                             ...prev,
-                            workout2: {
-                              ...prev.workout2,
-                              description: e.target.value,
+                            workouts: {
+                              ...prev.workouts,
+                              WORKOUT_2: {
+                                ...prev.workouts.WORKOUT_2,
+                                description: e.target.value,
+                              },
                             },
                           }))
                         }
@@ -164,35 +183,36 @@ export function DailyChecklist({ currentDay }: DailyChecklistProps) {
 
             {/* Other tasks */}
             <Card className="overflow-hidden border rounded-lg divide-y">
-              {[
-                { id: "water", label: "3 liter water drinken" },
-                { id: "reading", label: "10 pagina's non-fictie lezen" },
-                { id: "diet", label: "Gezond dieet volgen" },
-                { id: "alcohol", label: "Geen alcohol drinken" },
-                { id: "sleep", label: "8 uur slaap behalen" },
-              ].map((task) => (
+              {(
+                [
+                  "WATER_INTAKE",
+                  "READING",
+                  "HEALTHY_DIET",
+                  "SLEEP_GOAL",
+                ] as OtherTaskType[]
+              ).map((taskType) => (
                 <div
-                  key={task.id}
+                  key={taskType}
                   className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <Checkbox
-                      id={task.id}
-                      checked={formData[task.id as keyof DayData] as boolean}
+                      id={taskType}
+                      checked={formData.tasks[taskType]}
                       onCheckedChange={(checked) =>
                         setFormData((prev) => ({
                           ...prev,
-                          [task.id]: checked as boolean,
+                          tasks: {
+                            ...prev.tasks,
+                            [taskType]: checked as boolean,
+                          },
                         }))
                       }
                     />
-                    <Label htmlFor={task.id} className="text-base font-medium">
-                      {task.label}
+                    <Label htmlFor={taskType} className="text-base font-medium">
+                      {TASK_LABELS[taskType]}
                     </Label>
                   </div>
-                  {formData[task.id as keyof DayData] && (
-                    <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  )}
                 </div>
               ))}
             </Card>
@@ -200,8 +220,10 @@ export function DailyChecklist({ currentDay }: DailyChecklistProps) {
         ) : (
           <Card className="p-6">
             <div className="text-center space-y-2">
-              <h3 className="text-lg font-semibold">LOSER</h3>
-              <p className="text-sm text-muted-foreground">Morgen beter 🙏🏼</p>
+              <h3 className="text-lg font-semibold">Rustdag</h3>
+              <p className="text-sm text-muted-foreground">
+                Morgen weer verder! 💪
+              </p>
             </div>
           </Card>
         )}
@@ -210,11 +232,13 @@ export function DailyChecklist({ currentDay }: DailyChecklistProps) {
           <Button
             type="button"
             variant="outline"
-            onClick={() => setIsRestDay(!isRestDay)}
+            onClick={() =>
+              setFormData((prev) => ({ ...prev, isRestDay: !prev.isRestDay }))
+            }
           >
-            {isRestDay ? "Rustdag annuleren" : "Markeer als rustdag"}
+            {formData.isRestDay ? "Rustdag annuleren" : "Markeer als rustdag"}
           </Button>
-          {!isRestDay && <Button type="submit">Opslaan</Button>}
+          {!formData.isRestDay && <Button type="submit">Opslaan</Button>}
         </div>
       </div>
     </form>

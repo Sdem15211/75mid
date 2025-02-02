@@ -4,10 +4,15 @@ import { FriendActivity } from "@/components/dashboard/friend-activity";
 import { SignOutButton } from "@/components/auth/signout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Trophy } from "lucide-react";
+import { getDayStatus } from "@/app/actions/tasks";
+import { getDayNumber, CHALLENGE_START_DATE } from "@/lib/challenge-utils";
+import { startOfDay } from "date-fns";
 
 export default async function DashboardPage() {
   const session = await auth();
-  const mockCurrentDay = 43; // This would come from the database
+  const today = startOfDay(new Date());
+  const currentDay = getDayNumber(today) ?? 1;
+  const dayData = await getDayStatus(today);
 
   return (
     <div className="min-h-screen bg-background">
@@ -33,7 +38,7 @@ export default async function DashboardPage() {
             Welkom {session?.user?.name}
           </h1>
           <p className="text-muted-foreground text-sm">
-            Het is dag {mockCurrentDay} van de 75MID challenge.
+            Het is dag {currentDay} van de 75MID challenge.
           </p>
         </div>
 
@@ -42,14 +47,14 @@ export default async function DashboardPage() {
           {/* Main content area */}
           <div className="flex-1">
             <div className="p-6 rounded-lg border bg-card">
-              <DailyChecklist currentDay={mockCurrentDay} />
+              <DailyChecklist currentDay={currentDay} />
             </div>
           </div>
 
           {/* Sidebar */}
           <div className="lg:w-[400px] h-full">
             <div className="p-6 rounded-lg border bg-card sticky top-6">
-              <FriendActivity currentDay={mockCurrentDay} />
+              <FriendActivity currentDay={currentDay} />
             </div>
           </div>
         </div>
