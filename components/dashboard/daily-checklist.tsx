@@ -5,12 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  ChevronLeft,
-  ChevronRight,
-  CheckCircle2,
-  ArrowRight,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 interface DailyChecklistProps {
