@@ -1,6 +1,6 @@
 import { Day, TaskCompletion } from "@prisma/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { startOfDay } from "date-fns";
+import { normalizeToUTCDay } from "@/lib/challenge-utils";
 
 export type DayData = (Day & { completions: TaskCompletion[] }) & {
   restDaysLeft?: number;
@@ -33,7 +33,7 @@ async function fetchDayData(
   userId: string
 ): Promise<DayData | null> {
   const response = await fetch(
-    `/api/days/${userId}?date=${startOfDay(date).toISOString()}`
+    `/api/days/${userId}?date=${normalizeToUTCDay(date).toISOString()}`
   );
   if (!response.ok) {
     throw new Error("Failed to fetch day data");
@@ -52,7 +52,7 @@ async function updateDayData(data: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      date: startOfDay(data.date).toISOString(),
+      date: normalizeToUTCDay(data.date).toISOString(),
       ...data.formData,
     }),
   });
@@ -66,7 +66,7 @@ async function updateDayData(data: {
 
 export function useDayData(date: Date, userId: string) {
   return useQuery({
-    queryKey: ["day", startOfDay(date).toISOString(), userId],
+    queryKey: ["day", normalizeToUTCDay(date).toISOString(), userId],
     queryFn: () => fetchDayData(date, userId),
     enabled: !!userId,
   });
@@ -80,7 +80,11 @@ export function useUpdateDayData() {
     onSuccess: (data, variables) => {
       // Update the query cache with the new data
       queryClient.setQueryData(
-        ["day", startOfDay(variables.date).toISOString(), variables.userId],
+        [
+          "day",
+          normalizeToUTCDay(variables.date).toISOString(),
+          variables.userId,
+        ],
         data
       );
     },
