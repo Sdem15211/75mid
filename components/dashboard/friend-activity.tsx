@@ -71,9 +71,7 @@ export function FriendActivity({ currentDay }: FriendActivityProps) {
                         <div className="flex flex-col gap-1 items-start justify-center">
                           <p className="font-medium">{user.name}</p>
                           {user.day?.isRestDay ? (
-                            <Badge variant="secondary">
-                              Gemarkeerd als rustdag
-                            </Badge>
+                            <Badge variant="secondary">Rustdag</Badge>
                           ) : (
                             <p className="text-sm text-muted-foreground">
                               {completedTasks}/{totalTasks} taken voltooid
@@ -88,9 +86,12 @@ export function FriendActivity({ currentDay }: FriendActivityProps) {
                 <CollapsibleContent>
                   <Card className="mt-2 p-4 border-dashed">
                     {user.day?.isRestDay ? (
-                      <p className="text-sm text-muted-foreground text-center py-2">
-                        Rustdag
-                      </p>
+                      <div className="text-center space-y-2">
+                        <h3 className="text-lg font-semibold">LOSER</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Morgen beter 🙏🏼
+                        </p>
+                      </div>
                     ) : !user.day?.completions.length ? (
                       <p className="text-sm text-muted-foreground text-center py-2">
                         Nog geen taken afgerond vandaag

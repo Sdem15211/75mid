@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -20,10 +20,24 @@ import {
   transformDayDataToFormData,
   FormData,
 } from "@/lib/hooks/use-day-data";
+import { useInvalidateFriendsData } from "@/lib/hooks/use-friends-data";
 
 interface DailyChecklistProps {
   initialDate: Date;
   userId: string;
+}
+
+function isAllTasksCompleted(formData: FormData): boolean {
+  if (formData.isRestDay) return true;
+
+  const workoutsCompleted = Object.values(formData.workouts).every(
+    (workout) => workout.completed
+  );
+  const tasksCompleted = Object.values(formData.tasks).every(
+    (completed) => completed
+  );
+
+  return workoutsCompleted && tasksCompleted;
 }
 
 export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
@@ -31,6 +45,7 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
   const { data: dayData, isLoading } = useDayData(date, userId);
   const { mutate: updateDay, isPending: isUpdating } = useUpdateDayData();
   const { toast } = useToast();
+  const invalidateFriendsData = useInvalidateFriendsData();
 
   const [formData, setFormData] = useState<FormData>(() =>
     transformDayDataToFormData(dayData ?? null)
@@ -56,6 +71,8 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
             description: "Je voortgang is succesvol bijgewerkt.",
             variant: "success",
           });
+          // Invalidate friends data to trigger a refetch
+          invalidateFriendsData();
         },
         onError: (error) => {
           toast({
@@ -81,13 +98,23 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
     );
   }
 
+  const allTasksCompleted = isAllTasksCompleted(formData);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       <div className="space-y-6">
         <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-          <h2 className="text-2xl font-bold text-center sm:text-left">
-            {dayNumber ? `Dag ${dayNumber}` : "Buiten challenge periode"}
-          </h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-center sm:text-left">
+              {dayNumber ? `Dag ${dayNumber}` : "Buiten challenge periode"}
+            </h2>
+            {allTasksCompleted && isWithinPeriod && (
+              <div className="flex items-center gap-2 px-3 py-1 bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-full">
+                <CheckCircle2 className="h-4 w-4" />
+                <span className="text-sm font-medium">Compleet</span>
+              </div>
+            )}
+          </div>
           <div className="flex items-center justify-center gap-4">
             <Button
               variant="outline"
@@ -319,6 +346,8 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
                             : "Deze dag is niet langer een rustdag.",
                           variant: "default",
                         });
+                        // Invalidate friends data to trigger a refetch
+                        invalidateFriendsData();
                       },
                       onError: (error) => {
                         toast({

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface UserDayData {
   id: string;
@@ -21,9 +21,21 @@ async function fetchAllUsersProgress(): Promise<UserDayData[]> {
   return res.json();
 }
 
+export const FRIENDS_QUERY_KEY = ["users-progress"] as const;
+
 export function useFriendsData() {
   return useQuery({
-    queryKey: ["users-progress"],
+    queryKey: FRIENDS_QUERY_KEY,
     queryFn: fetchAllUsersProgress,
+    // Refetch data every 5 minutes in the background
+    refetchInterval: 5 * 60 * 1000,
+    // Refetch when window regains focus
+    refetchOnWindowFocus: true,
   });
+}
+
+// Hook to invalidate friends data cache
+export function useInvalidateFriendsData() {
+  const queryClient = useQueryClient();
+  return () => queryClient.invalidateQueries({ queryKey: FRIENDS_QUERY_KEY });
 }
