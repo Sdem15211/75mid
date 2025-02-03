@@ -13,7 +13,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "75MID Challenge",
-  description: "Track your 75MID challenge progress",
+  description: "Track je 75MID challenge progress",
 };
 
 export default function RootLayout({
