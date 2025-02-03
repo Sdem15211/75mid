@@ -263,11 +263,12 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
                   "READING",
                   "HEALTHY_DIET",
                   "SLEEP_GOAL",
+                  "PROGRESS_PHOTO",
                 ] as const
               ).map((taskType) => (
                 <div
                   key={taskType}
-                  className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-colors"
+                  className="flex items-center justify-between p-3 sm:p-4 transition-colors [@media(hover:hover)]:hover:bg-muted/50"
                 >
                   <div className="flex items-center gap-3">
                     <Checkbox

@@ -12,7 +12,12 @@ type WorkoutData = {
   description: string;
 };
 
-type OtherTaskType = "WATER_INTAKE" | "READING" | "HEALTHY_DIET" | "SLEEP_GOAL";
+type OtherTaskType =
+  | "WATER_INTAKE"
+  | "READING"
+  | "HEALTHY_DIET"
+  | "SLEEP_GOAL"
+  | "PROGRESS_PHOTO";
 
 export type FormData = {
   isRestDay: boolean;
@@ -94,6 +99,7 @@ export function transformDayDataToFormData(dayData: DayData | null): FormData {
       READING: false,
       HEALTHY_DIET: false,
       SLEEP_GOAL: false,
+      PROGRESS_PHOTO: false,
     },
   };
 
@@ -133,6 +139,9 @@ export function transformDayDataToFormData(dayData: DayData | null): FormData {
       ),
       SLEEP_GOAL: dayData.completions.some(
         (c) => c.taskType === "SLEEP_GOAL" && c.completed
+      ),
+      PROGRESS_PHOTO: dayData.completions.some(
+        (c) => c.taskType === "PROGRESS_PHOTO" && c.completed
       ),
     },
   };

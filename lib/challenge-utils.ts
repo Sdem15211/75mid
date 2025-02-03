@@ -36,7 +36,8 @@ export type TaskType =
   | "WATER_INTAKE"
   | "READING"
   | "HEALTHY_DIET"
-  | "SLEEP_GOAL";
+  | "SLEEP_GOAL"
+  | "PROGRESS_PHOTO";
 
 export const TASK_LABELS: Record<TaskType, string> = {
   WORKOUT_1: "Eerste Workout",
@@ -45,4 +46,5 @@ export const TASK_LABELS: Record<TaskType, string> = {
   READING: "Lees 10 pagina's in non-fictie",
   HEALTHY_DIET: "Eet gezond",
   SLEEP_GOAL: "8 uur slaap",
+  PROGRESS_PHOTO: "Progress foto genomen",
 };

@@ -9,15 +9,10 @@ export async function DELETE() {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Soft delete the user
-    await prisma.user.update({
+    // Delete the user and all related data (cascading delete will handle relations)
+    await prisma.user.delete({
       where: {
         id: session.user.id,
-      },
-      data: {
-        isDeleted: true,
-        // Invalidate the email to allow reuse
-        email: `deleted_${session.user.id}_${new Date().getTime()}@deleted.com`,
       },
     });
 
