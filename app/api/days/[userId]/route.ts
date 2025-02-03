@@ -99,8 +99,13 @@ export async function POST(
       return Response.json({ error: "User not found" }, { status: 404 });
     }
 
+    // Only check rest days if we're changing the rest day status
+    const isChangingRestDay = existingDay
+      ? isRestDay !== existingDay.isRestDay
+      : isRestDay;
+
     // Check if trying to use a rest day when none are left
-    if (isRestDay && !existingDay?.isRestDay && user.restDaysLeft <= 0) {
+    if (isChangingRestDay && isRestDay && user.restDaysLeft <= 0) {
       return Response.json(
         { error: "No rest days left to use" },
         { status: 400 }
@@ -126,8 +131,8 @@ export async function POST(
       },
     });
 
-    // Update rest days count if needed
-    if (isRestDay !== existingDay?.isRestDay) {
+    // Update rest days count ONLY if the rest day status is actually changing
+    if (isChangingRestDay) {
       await prisma.user.update({
         where: { id: userId },
         data: {
