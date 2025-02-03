@@ -1,8 +1,6 @@
 import { addDays, isBefore, isAfter, startOfDay } from "date-fns";
 
-// Challenge constants - Temporarily set to include current date for testing
-const today = new Date();
-export const CHALLENGE_START_DATE = addDays(today, -10); // Start 10 days ago
+export const CHALLENGE_START_DATE = new Date(2025, 1, 3); // February 3rd, 2025
 export const CHALLENGE_END_DATE = addDays(CHALLENGE_START_DATE, 74); // 75 days total
 export const CHALLENGE_DURATION_DAYS = 75;
 

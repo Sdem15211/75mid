@@ -4,15 +4,29 @@ import { FriendActivity } from "@/components/dashboard/friend-activity";
 import { SignOutButton } from "@/components/auth/signout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Trophy } from "lucide-react";
-import { getDayStatus } from "@/app/actions/tasks";
-import { getDayNumber, CHALLENGE_START_DATE } from "@/lib/challenge-utils";
+import { getDayNumber } from "@/lib/challenge-utils";
 import { startOfDay } from "date-fns";
+import prisma from "@/lib/db";
 
 export default async function DashboardPage() {
   const session = await auth();
+  if (!session?.user?.id) return null;
+
   const today = startOfDay(new Date());
   const currentDay = getDayNumber(today) ?? 1;
-  const dayData = await getDayStatus(today);
+
+  // Fetch today's data on the server
+  const initialDayData = await prisma.day.findUnique({
+    where: {
+      userId_date: {
+        userId: session.user.id,
+        date: today,
+      },
+    },
+    include: {
+      completions: true,
+    },
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -35,7 +49,7 @@ export default async function DashboardPage() {
         {/* Welcome message */}
         <div className="flex flex-col space-y-2 mb-8">
           <h1 className="text-2xl font-bold tracking-tight">
-            Welkom {session?.user?.name}
+            Welkom {session.user.name}
           </h1>
           <p className="text-muted-foreground text-sm">
             Het is dag {currentDay} van de 75MID challenge.
@@ -47,7 +61,11 @@ export default async function DashboardPage() {
           {/* Main content area */}
           <div className="flex-1">
             <div className="p-6 rounded-lg border bg-card">
-              <DailyChecklist currentDay={currentDay} />
+              <DailyChecklist
+                initialDate={today}
+                // initialData={initialDayData}
+                userId={session.user.id}
+              />
             </div>
           </div>
 
