@@ -3,7 +3,10 @@ import prisma from "@/lib/db";
 import { TaskType } from "@prisma/client";
 import { NextRequest } from "next/server";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { userId: string } }
+) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -12,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams;
     const date = new Date(searchParams.get("date") || "");
-    const userId = searchParams.get("userId");
+    const { userId } = await params;
 
     if (userId !== session.user.id) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -60,14 +63,18 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { userId: string } }
+) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { date, userId, isRestDay, workouts, tasks } = await request.json();
+    const { date, isRestDay, workouts, tasks } = await request.json();
+    const { userId } = await params;
 
     if (userId !== session.user.id) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });

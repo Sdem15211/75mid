@@ -28,7 +28,7 @@ async function fetchDayData(
   userId: string
 ): Promise<DayData | null> {
   const response = await fetch(
-    `/api/days?date=${startOfDay(date).toISOString()}&userId=${userId}`
+    `/api/days/${userId}?date=${startOfDay(date).toISOString()}`
   );
   if (!response.ok) {
     throw new Error("Failed to fetch day data");
@@ -41,14 +41,13 @@ async function updateDayData(data: {
   userId: string;
   formData: FormData;
 }): Promise<DayData> {
-  const response = await fetch("/api/days", {
+  const response = await fetch(`/api/days/${data.userId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
       date: startOfDay(data.date).toISOString(),
-      userId: data.userId,
       ...data.formData,
     }),
   });

@@ -6,10 +6,11 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Trophy } from "lucide-react";
 import { getDayNumber } from "@/lib/challenge-utils";
 import { startOfDay } from "date-fns";
+import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
   const session = await auth();
-  if (!session?.user?.id) return null;
+  if (!session?.user?.id) return redirect("/login");
 
   const today = startOfDay(new Date());
   const currentDay = getDayNumber(today) ?? 1;
@@ -20,7 +21,7 @@ export default async function DashboardPage() {
       <header className="border-b px-8 py-4 mx-auto">
         <div className="flex items-center justify-between">
           <h1 className="text-xl tracking-tight font-semibold flex items-center">
-            <Trophy className="w-4 h-4 mr-2 text-green" />
+            <Trophy className="w-4 h-4 mr-2 text-primary" />
             75MID
           </h1>
           <div className="flex items-center gap-2">
