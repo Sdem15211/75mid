@@ -59,7 +59,7 @@ export default async function DashboardPage() {
           {/* Sidebar */}
           <div className="lg:w-[400px] h-full">
             <div className="p-4 lg:p-6 rounded-lg border bg-card sticky top-6">
-              <FriendActivity currentDay={currentDay} />
+              <FriendActivity />
             </div>
           </div>
         </div>

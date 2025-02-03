@@ -15,17 +15,13 @@ import { TASK_LABELS } from "@/lib/challenge-utils";
 import { useFriendsData } from "@/lib/hooks/use-friends-data";
 import { cn } from "@/lib/utils";
 
-interface FriendActivityProps {
-  currentDay: number;
-}
-
-export function FriendActivity({ currentDay }: FriendActivityProps) {
+export function FriendActivity() {
   const { data: users, isLoading } = useFriendsData();
 
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div>
+        <div className="flex items-center justify-center w-full">
           <h2 className="text-2xl font-bold">Vrienden Activiteit</h2>
           <p className="text-sm text-muted-foreground">Laden...</p>
         </div>
@@ -35,7 +31,7 @@ export function FriendActivity({ currentDay }: FriendActivityProps) {
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="flex flex-col items-center justify-center w-full">
         <h2 className="text-2xl font-bold">Vrienden Activiteit</h2>
         <p className="text-sm text-muted-foreground">
           Bekijk hoe je vrienden het vandaag doen

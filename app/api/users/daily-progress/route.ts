@@ -17,29 +17,6 @@ export async function GET() {
       userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
 
-    // First, let's check what days exist in the database
-    const allDays = await prisma.day.findMany({
-      where: {
-        date: {
-          gte: todayStart,
-          lt: tomorrowStart,
-        },
-      },
-      include: {
-        completions: true,
-        user: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    });
-
-    console.log(
-      "All days in database for today:",
-      JSON.stringify(allDays, null, 2)
-    );
-
     // Get all users with their day data for today using a date range
     const users = await prisma.user.findMany({
       select: {
@@ -73,9 +50,6 @@ export async function GET() {
         },
       },
     });
-
-    // Log the raw data for debugging
-    console.log("Users data:", JSON.stringify(users, null, 2));
 
     // Transform the data to match the expected format
     const transformedUsers = users.map((user) => ({
