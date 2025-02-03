@@ -88,7 +88,7 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
           <h2 className="text-2xl font-bold text-center sm:text-left">
             {dayNumber ? `Dag ${dayNumber}` : "Buiten challenge periode"}
           </h2>
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-4">
             <Button
               variant="outline"
               size="icon"
@@ -115,7 +115,7 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
         </div>
 
         {!isWithinPeriod ? (
-          <Card className="p-6">
+          <Card className="p-4">
             <div className="text-center space-y-2">
               <h3 className="text-lg font-semibold">
                 Deze dag valt buiten de 75MID challenge
@@ -126,103 +126,103 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
             </div>
           </Card>
         ) : !formData.isRestDay ? (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Workout tasks */}
             <Card className="overflow-hidden border rounded-lg">
-              <div className="p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-3 sm:p-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Workout 1 */}
-                  <div className="flex items-start gap-4">
-                    <Checkbox
-                      id="WORKOUT_1"
-                      checked={formData.workouts.WORKOUT_1.completed}
-                      onCheckedChange={(checked) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          workouts: {
-                            ...prev.workouts,
-                            WORKOUT_1: {
-                              ...prev.workouts.WORKOUT_1,
-                              completed: checked as boolean,
-                            },
-                          },
-                        }))
-                      }
-                      disabled={isUpdating}
-                    />
-                    <div className="flex-1">
-                      <Label
-                        htmlFor="WORKOUT_1"
-                        className="text-base font-medium"
-                      >
-                        {TASK_LABELS.WORKOUT_1}
-                      </Label>
-                      <Textarea
-                        placeholder="Beschrijf je workout..."
-                        value={formData.workouts.WORKOUT_1.description}
-                        onChange={(e) =>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <Checkbox
+                        id="WORKOUT_1"
+                        checked={formData.workouts.WORKOUT_1.completed}
+                        onCheckedChange={(checked) =>
                           setFormData((prev) => ({
                             ...prev,
                             workouts: {
                               ...prev.workouts,
                               WORKOUT_1: {
                                 ...prev.workouts.WORKOUT_1,
-                                description: e.target.value,
+                                completed: checked as boolean,
                               },
                             },
                           }))
                         }
-                        className="mt-2"
                         disabled={isUpdating}
                       />
+                      <Label
+                        htmlFor="WORKOUT_1"
+                        className="text-base font-medium"
+                      >
+                        {TASK_LABELS.WORKOUT_1}
+                      </Label>
                     </div>
-                  </div>
-
-                  {/* Workout 2 */}
-                  <div className="flex items-start gap-4">
-                    <Checkbox
-                      id="WORKOUT_2"
-                      checked={formData.workouts.WORKOUT_2.completed}
-                      onCheckedChange={(checked) =>
+                    <Textarea
+                      placeholder="Beschrijf je workout..."
+                      value={formData.workouts.WORKOUT_1.description}
+                      onChange={(e) =>
                         setFormData((prev) => ({
                           ...prev,
                           workouts: {
                             ...prev.workouts,
-                            WORKOUT_2: {
-                              ...prev.workouts.WORKOUT_2,
-                              completed: checked as boolean,
+                            WORKOUT_1: {
+                              ...prev.workouts.WORKOUT_1,
+                              description: e.target.value,
                             },
                           },
                         }))
                       }
+                      className="min-h-[100px]"
                       disabled={isUpdating}
                     />
-                    <div className="flex-1">
-                      <Label
-                        htmlFor="WORKOUT_2"
-                        className="text-base font-medium"
-                      >
-                        {TASK_LABELS.WORKOUT_2}
-                      </Label>
-                      <Textarea
-                        placeholder="Beschrijf je workout..."
-                        value={formData.workouts.WORKOUT_2.description}
-                        onChange={(e) =>
+                  </div>
+
+                  {/* Workout 2 */}
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <Checkbox
+                        id="WORKOUT_2"
+                        checked={formData.workouts.WORKOUT_2.completed}
+                        onCheckedChange={(checked) =>
                           setFormData((prev) => ({
                             ...prev,
                             workouts: {
                               ...prev.workouts,
                               WORKOUT_2: {
                                 ...prev.workouts.WORKOUT_2,
-                                description: e.target.value,
+                                completed: checked as boolean,
                               },
                             },
                           }))
                         }
-                        className="mt-2"
                         disabled={isUpdating}
                       />
+                      <Label
+                        htmlFor="WORKOUT_2"
+                        className="text-base font-medium"
+                      >
+                        {TASK_LABELS.WORKOUT_2}
+                      </Label>
                     </div>
+                    <Textarea
+                      placeholder="Beschrijf je workout..."
+                      value={formData.workouts.WORKOUT_2.description}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          workouts: {
+                            ...prev.workouts,
+                            WORKOUT_2: {
+                              ...prev.workouts.WORKOUT_2,
+                              description: e.target.value,
+                            },
+                          },
+                        }))
+                      }
+                      className="min-h-[100px]"
+                      disabled={isUpdating}
+                    />
                   </div>
                 </div>
               </div>
@@ -240,9 +240,9 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
               ).map((taskType) => (
                 <div
                   key={taskType}
-                  className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+                  className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-colors"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <Checkbox
                       id={taskType}
                       checked={formData.tasks[taskType]}
@@ -266,7 +266,7 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
             </Card>
           </div>
         ) : (
-          <Card className="p-6">
+          <Card className="p-4">
             <div className="text-center space-y-2">
               <h3 className="text-lg font-semibold">LOSER</h3>
               <p className="text-sm text-muted-foreground">Morgen beter 🙏🏼</p>
@@ -355,7 +355,7 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
               <Button
                 type="submit"
                 disabled={isUpdating}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto font-semibold"
               >
                 {isUpdating ? "Opslaan..." : "Opslaan"}
               </Button>

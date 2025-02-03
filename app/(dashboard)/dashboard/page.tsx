@@ -36,9 +36,9 @@ export default async function DashboardPage() {
       </header>
 
       {/* Main content */}
-      <div className="py-6 px-8">
+      <div className="py-4 px-4 sm:px-6 lg:px-8">
         {/* Welcome message */}
-        <div className="flex flex-col space-y-2 mb-8">
+        <div className="flex flex-col space-y-2 mb-6">
           <h1 className="text-2xl font-bold tracking-tight">
             Welkom {session.user.name}
           </h1>
@@ -48,17 +48,17 @@ export default async function DashboardPage() {
         </div>
 
         {/* Content grid with sidebar */}
-        <div className="flex flex-col lg:flex-row gap-6 justify-between">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 justify-between">
           {/* Main content area */}
           <div className="flex-1">
-            <div className="p-6 rounded-lg border bg-card">
+            <div className="p-4 lg:p-6 rounded-lg border bg-card">
               <DailyChecklist initialDate={today} userId={session.user.id} />
             </div>
           </div>
 
           {/* Sidebar */}
           <div className="lg:w-[400px] h-full">
-            <div className="p-6 rounded-lg border bg-card sticky top-6">
+            <div className="p-4 lg:p-6 rounded-lg border bg-card sticky top-6">
               <FriendActivity currentDay={currentDay} />
             </div>
           </div>
