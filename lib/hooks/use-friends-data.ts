@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-interface UserDayData {
+export interface UserDayData {
   id: string;
   name: string | null;
   image: string | null;
@@ -27,10 +27,11 @@ async function fetchAllUsersProgress(): Promise<UserDayData[]> {
 
 export const FRIENDS_QUERY_KEY = ["users-progress"] as const;
 
-export function useFriendsData() {
+export function useFriendsData(initialData?: UserDayData[]) {
   return useQuery({
     queryKey: FRIENDS_QUERY_KEY,
     queryFn: fetchAllUsersProgress,
+    initialData,
   });
 }
 

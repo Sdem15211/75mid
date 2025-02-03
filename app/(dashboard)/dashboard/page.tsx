@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
-import { DailyChecklist } from "@/components/dashboard/daily-checklist";
-import { FriendActivity } from "@/components/dashboard/friend-activity";
+import { DailyChecklistServer } from "@/components/dashboard/daily-checklist-server";
+import { FriendActivityServer } from "@/components/dashboard/friend-activity-server";
 import { SignOutButton } from "@/components/auth/signout-button";
 import { DeleteAccountButton } from "@/components/auth/delete-account-button";
 import { UserAvatar } from "@/components/auth/user-avatar";
@@ -52,14 +52,17 @@ export default async function DashboardPage() {
           {/* Main content area */}
           <div className="flex-1">
             <div className="p-4 lg:p-6 rounded-lg border bg-card">
-              <DailyChecklist initialDate={today} userId={session.user.id} />
+              <DailyChecklistServer
+                initialDate={today}
+                userId={session.user.id}
+              />
             </div>
           </div>
 
           {/* Sidebar */}
           <div className="lg:w-[400px] h-full">
             <div className="p-4 lg:p-6 rounded-lg border bg-card sticky top-6">
-              <FriendActivity />
+              <FriendActivityServer />
             </div>
           </div>
         </div>

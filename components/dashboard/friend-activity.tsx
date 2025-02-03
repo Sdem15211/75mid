@@ -12,11 +12,15 @@ import { ChevronDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TASK_LABELS } from "@/lib/challenge-utils";
-import { useFriendsData } from "@/lib/hooks/use-friends-data";
+import { useFriendsData, UserDayData } from "@/lib/hooks/use-friends-data";
 import { cn } from "@/lib/utils";
 
-export function FriendActivity() {
-  const { data: users, isLoading } = useFriendsData();
+interface FriendActivityProps {
+  initialUsersData: UserDayData[];
+}
+
+export function FriendActivity({ initialUsersData }: FriendActivityProps) {
+  const { data: users, isLoading } = useFriendsData(initialUsersData);
 
   if (isLoading) {
     return (
