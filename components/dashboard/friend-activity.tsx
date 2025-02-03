@@ -13,6 +13,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TASK_LABELS } from "@/lib/challenge-utils";
 import { useFriendsData } from "@/lib/hooks/use-friends-data";
+import { cn } from "@/lib/utils";
 
 interface FriendActivityProps {
   currentDay: number;
@@ -67,7 +68,7 @@ export function FriendActivity({ currentDay }: FriendActivityProps) {
                               .join("")}
                           </AvatarFallback>
                         </Avatar>
-                        <div>
+                        <div className="flex flex-col gap-1 items-start justify-center">
                           <p className="font-medium">{user.name}</p>
                           {user.day?.isRestDay ? (
                             <Badge variant="secondary">
@@ -90,6 +91,10 @@ export function FriendActivity({ currentDay }: FriendActivityProps) {
                       <p className="text-sm text-muted-foreground text-center py-2">
                         Rustdag
                       </p>
+                    ) : !user.day?.completions.length ? (
+                      <p className="text-sm text-muted-foreground text-center py-2">
+                        Nog geen taken afgerond vandaag
+                      </p>
                     ) : (
                       <div className="space-y-4">
                         {/* Workouts with notes */}
@@ -100,8 +105,15 @@ export function FriendActivity({ currentDay }: FriendActivityProps) {
                             )
                             .map((task) => (
                               <div key={task.taskType} className="space-y-2">
-                                <div className="flex items-start gap-2">
-                                  <Checkbox checked={task.completed} disabled />
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    checked={task.completed}
+                                    disabled
+                                    className={cn(
+                                      "opacity-100 data-[state=checked]:bg-primary data-[state=checked]:opacity-100",
+                                      "border-primary"
+                                    )}
+                                  />
                                   <div className="space-y-1">
                                     <label className="text-sm font-medium">
                                       {
@@ -132,7 +144,14 @@ export function FriendActivity({ currentDay }: FriendActivityProps) {
                                 key={task.taskType}
                                 className="flex items-center gap-2"
                               >
-                                <Checkbox checked={task.completed} disabled />
+                                <Checkbox
+                                  checked={task.completed}
+                                  disabled
+                                  className={cn(
+                                    "opacity-100 data-[state=checked]:bg-primary data-[state=checked]:opacity-100",
+                                    "border-primary"
+                                  )}
+                                />
                                 <label className="text-sm">
                                   {
                                     TASK_LABELS[
