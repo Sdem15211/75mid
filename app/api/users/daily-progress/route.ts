@@ -1,18 +1,20 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
-import { startOfDay } from "date-fns";
+import { startOfDay, endOfDay } from "date-fns";
 
 export async function GET() {
   try {
     const now = new Date();
-    const today = startOfDay(now);
+    const todayStart = startOfDay(now);
+    const todayEnd = endOfDay(now);
 
     console.log("Fetching daily progress:", {
       rawDate: now.toISOString(),
-      startOfDay: today.toISOString(),
+      todayStart: todayStart.toISOString(),
+      todayEnd: todayEnd.toISOString(),
     });
 
-    // Get all users with their day data for today
+    // Get all users with their day data for today using a date range
     const users = await prisma.user.findMany({
       select: {
         id: true,
@@ -20,7 +22,10 @@ export async function GET() {
         image: true,
         days: {
           where: {
-            date: today,
+            date: {
+              gte: todayStart,
+              lte: todayEnd,
+            },
           },
           select: {
             isRestDay: true,
@@ -33,6 +38,10 @@ export async function GET() {
               },
             },
           },
+          orderBy: {
+            date: "desc",
+          },
+          take: 1,
         },
       },
     });
