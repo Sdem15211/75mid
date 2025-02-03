@@ -4,7 +4,13 @@ import { startOfDay } from "date-fns";
 
 export async function GET() {
   try {
-    const today = startOfDay(new Date());
+    const now = new Date();
+    const today = startOfDay(now);
+
+    console.log("Fetching daily progress:", {
+      rawDate: now.toISOString(),
+      startOfDay: today.toISOString(),
+    });
 
     // Get all users with their day data for today
     const users = await prisma.user.findMany({
@@ -31,6 +37,9 @@ export async function GET() {
       },
     });
 
+    // Log the raw data for debugging
+    console.log("Users data:", JSON.stringify(users, null, 2));
+
     // Transform the data to match the expected format
     const transformedUsers = users.map((user) => ({
       id: user.id,
@@ -38,6 +47,12 @@ export async function GET() {
       image: user.image,
       day: user.days[0] ?? null,
     }));
+
+    // Log the transformed data
+    console.log(
+      "Transformed users data:",
+      JSON.stringify(transformedUsers, null, 2)
+    );
 
     return NextResponse.json(transformedUsers);
   } catch (error) {
