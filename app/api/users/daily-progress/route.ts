@@ -1,18 +1,44 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
-import { startOfDay, endOfDay } from "date-fns";
+import { normalizeToUTCDay } from "@/lib/challenge-utils";
 
 export async function GET() {
   try {
     const now = new Date();
-    const todayStart = startOfDay(now);
-    const todayEnd = endOfDay(now);
+    // Convert to UTC day boundaries
+    const todayStart = normalizeToUTCDay(now);
+    const tomorrowStart = new Date(todayStart);
+    tomorrowStart.setUTCDate(tomorrowStart.getUTCDate() + 1);
 
-    console.log("Fetching daily progress:", {
-      rawDate: now.toISOString(),
+    console.log("Date range for query:", {
+      now: now.toISOString(),
       todayStart: todayStart.toISOString(),
-      todayEnd: todayEnd.toISOString(),
+      tomorrowStart: tomorrowStart.toISOString(),
+      userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
+
+    // First, let's check what days exist in the database
+    const allDays = await prisma.day.findMany({
+      where: {
+        date: {
+          gte: todayStart,
+          lt: tomorrowStart,
+        },
+      },
+      include: {
+        completions: true,
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    console.log(
+      "All days in database for today:",
+      JSON.stringify(allDays, null, 2)
+    );
 
     // Get all users with their day data for today using a date range
     const users = await prisma.user.findMany({
@@ -24,10 +50,12 @@ export async function GET() {
           where: {
             date: {
               gte: todayStart,
-              lte: todayEnd,
+              lt: tomorrowStart,
             },
           },
           select: {
+            id: true,
+            date: true,
             isRestDay: true,
             isComplete: true,
             completions: {
@@ -56,12 +84,6 @@ export async function GET() {
       image: user.image,
       day: user.days[0] ?? null,
     }));
-
-    // Log the transformed data
-    console.log(
-      "Transformed users data:",
-      JSON.stringify(transformedUsers, null, 2)
-    );
 
     return NextResponse.json(transformedUsers);
   } catch (error) {

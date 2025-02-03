@@ -1,22 +1,33 @@
 import { addDays, isBefore, isAfter, startOfDay } from "date-fns";
 
-export const CHALLENGE_START_DATE = new Date(2025, 1, 3); // February 3rd, 2025
+// Create the start date in UTC to match database storage
+export const CHALLENGE_START_DATE = new Date(Date.UTC(2025, 1, 3)); // February 3rd, 2025 00:00 UTC
 export const CHALLENGE_END_DATE = addDays(CHALLENGE_START_DATE, 74); // 75 days total
 export const CHALLENGE_DURATION_DAYS = 75;
 
+// Helper function to normalize a date to UTC midnight
+export function normalizeToUTCDay(date: Date): Date {
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+  );
+}
+
 export function isWithinChallengePeriod(date: Date): boolean {
-  const normalizedDate = startOfDay(date);
+  const normalizedDate = normalizeToUTCDay(date);
+  const normalizedStart = normalizeToUTCDay(CHALLENGE_START_DATE);
+  const normalizedEnd = normalizeToUTCDay(CHALLENGE_END_DATE);
+
   return (
-    !isBefore(normalizedDate, startOfDay(CHALLENGE_START_DATE)) &&
-    !isAfter(normalizedDate, startOfDay(CHALLENGE_END_DATE))
+    !isBefore(normalizedDate, normalizedStart) &&
+    !isAfter(normalizedDate, normalizedEnd)
   );
 }
 
 export function getDayNumber(date: Date): number | null {
   if (!isWithinChallengePeriod(date)) return null;
 
-  const normalizedDate = startOfDay(date);
-  const normalizedStartDate = startOfDay(CHALLENGE_START_DATE);
+  const normalizedDate = normalizeToUTCDay(date);
+  const normalizedStartDate = normalizeToUTCDay(CHALLENGE_START_DATE);
 
   const diffTime = normalizedDate.getTime() - normalizedStartDate.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
