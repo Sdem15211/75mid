@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { DailyChecklist } from "@/components/dashboard/daily-checklist";
 import { FriendActivity } from "@/components/dashboard/friend-activity";
 import { SignOutButton } from "@/components/auth/signout-button";
+import { DeleteAccountButton } from "@/components/auth/delete-account-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Trophy } from "lucide-react";
 import { getDayNumber } from "@/lib/challenge-utils";
@@ -26,6 +27,7 @@ export default async function DashboardPage() {
           </h1>
           <div className="flex items-center gap-2">
             <ThemeToggle />
+            <DeleteAccountButton />
             <SignOutButton />
           </div>
         </div>
