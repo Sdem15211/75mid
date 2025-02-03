@@ -19,12 +19,14 @@ import {
   useUpdateDayData,
   transformDayDataToFormData,
   FormData,
+  DayData,
 } from "@/lib/hooks/use-day-data";
 import { useInvalidateFriendsData } from "@/lib/hooks/use-friends-data";
 
 interface DailyChecklistProps {
   initialDate: Date;
   userId: string;
+  initialDayData: DayData | null;
 }
 
 function isAllTasksCompleted(formData: FormData): boolean {
@@ -40,15 +42,19 @@ function isAllTasksCompleted(formData: FormData): boolean {
   return workoutsCompleted && tasksCompleted;
 }
 
-export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
+export function DailyChecklist({
+  initialDate,
+  userId,
+  initialDayData,
+}: DailyChecklistProps) {
   const [date, setDate] = useState<Date>(initialDate);
-  const { data: dayData, isLoading } = useDayData(date, userId);
+  const { data: dayData, isLoading } = useDayData(date, userId, initialDayData);
   const { mutate: updateDay, isPending: isUpdating } = useUpdateDayData();
   const { toast } = useToast();
   const invalidateFriendsData = useInvalidateFriendsData();
 
   const [formData, setFormData] = useState<FormData>(() =>
-    transformDayDataToFormData(dayData ?? null)
+    transformDayDataToFormData(initialDayData ?? null)
   );
 
   // Update form data when dayData changes

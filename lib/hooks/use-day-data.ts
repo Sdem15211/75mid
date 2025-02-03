@@ -64,11 +64,16 @@ async function updateDayData(data: {
   return response.json();
 }
 
-export function useDayData(date: Date, userId: string) {
+export function useDayData(
+  date: Date,
+  userId: string,
+  initialData?: DayData | null
+) {
   return useQuery({
     queryKey: ["day", normalizeToUTCDay(date).toISOString(), userId],
     queryFn: () => fetchDayData(date, userId),
     enabled: !!userId,
+    initialData,
   });
 }
 
