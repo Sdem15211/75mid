@@ -2,7 +2,10 @@ import { Day, TaskCompletion } from "@prisma/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { startOfDay } from "date-fns";
 
-export type DayData = Day & { completions: TaskCompletion[] };
+export type DayData = (Day & { completions: TaskCompletion[] }) & {
+  restDaysLeft?: number;
+  error?: string;
+};
 
 type WorkoutData = {
   completed: boolean;
@@ -81,24 +84,26 @@ export function useUpdateDayData() {
 }
 
 export function transformDayDataToFormData(dayData: DayData | null): FormData {
-  if (!dayData) {
-    return {
-      isRestDay: false,
-      workouts: {
-        WORKOUT_1: { completed: false, description: "" },
-        WORKOUT_2: { completed: false, description: "" },
-      },
-      tasks: {
-        WATER_INTAKE: false,
-        READING: false,
-        HEALTHY_DIET: false,
-        SLEEP_GOAL: false,
-      },
-    };
+  const defaultFormData: FormData = {
+    isRestDay: false,
+    workouts: {
+      WORKOUT_1: { completed: false, description: "" },
+      WORKOUT_2: { completed: false, description: "" },
+    },
+    tasks: {
+      WATER_INTAKE: false,
+      READING: false,
+      HEALTHY_DIET: false,
+      SLEEP_GOAL: false,
+    },
+  };
+
+  if (!dayData || !dayData.completions) {
+    return defaultFormData;
   }
 
   return {
-    isRestDay: dayData.isRestDay,
+    isRestDay: dayData.isRestDay ?? false,
     workouts: {
       WORKOUT_1: {
         completed: dayData.completions.some(

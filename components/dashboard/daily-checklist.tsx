@@ -285,52 +285,82 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
 
         {isWithinPeriod && (
           <div className="flex justify-between items-center">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setFormData((prev) => ({
-                  ...prev,
-                  isRestDay: !prev.isRestDay,
-                }));
-                updateDay(
-                  {
-                    date,
-                    userId,
-                    formData: { ...formData, isRestDay: !formData.isRestDay },
-                  },
-                  {
-                    onSuccess: () => {
-                      toast({
-                        title: !formData.isRestDay
-                          ? "LOSER"
-                          : "Rustdag geannuleerd, lekker bezig",
-                        description: !formData.isRestDay
-                          ? "Deze dag is nu gemarkeerd als rustdag."
-                          : "Deze dag is niet langer een rustdag.",
-                        variant: "default",
-                      });
+            <div className="flex items-center gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    isRestDay: !prev.isRestDay,
+                  }));
+                  updateDay(
+                    {
+                      date,
+                      userId,
+                      formData: { ...formData, isRestDay: !formData.isRestDay },
                     },
-                    onError: () => {
-                      toast({
-                        title: "Er is iets misgegaan",
-                        description:
-                          "De wijziging kon niet worden opgeslagen. Probeer het opnieuw.",
-                        variant: "destructive",
-                      });
-                      // Revert the state change on error
-                      setFormData((prev) => ({
-                        ...prev,
-                        isRestDay: !prev.isRestDay,
-                      }));
-                    },
-                  }
-                );
-              }}
-              disabled={isUpdating}
-            >
-              {formData.isRestDay ? "Rustdag annuleren" : "Markeer als rustdag"}
-            </Button>
+                    {
+                      onSuccess: (response) => {
+                        if (response.error) {
+                          toast({
+                            title: "Er is iets misgegaan",
+                            description: response.error,
+                            variant: "destructive",
+                          });
+                          // Revert the state change on error
+                          setFormData((prev) => ({
+                            ...prev,
+                            isRestDay: !prev.isRestDay,
+                          }));
+                          return;
+                        }
+
+                        toast({
+                          title: !formData.isRestDay
+                            ? "Rustdag gebruikt"
+                            : "Rustdag geannuleerd",
+                          description: !formData.isRestDay
+                            ? `Je hebt een rustdag gebruikt. Je hebt nog ${
+                                response.restDaysLeft
+                              } rustdag${
+                                response.restDaysLeft === 1 ? "" : "en"
+                              } over.`
+                            : "Deze dag is niet langer een rustdag.",
+                          variant: "default",
+                        });
+                      },
+                      onError: (error) => {
+                        toast({
+                          title: "Er is iets misgegaan",
+                          description:
+                            error instanceof Error
+                              ? error.message
+                              : "De wijziging kon niet worden opgeslagen. Probeer het opnieuw.",
+                          variant: "destructive",
+                        });
+                        // Revert the state change on error
+                        setFormData((prev) => ({
+                          ...prev,
+                          isRestDay: !prev.isRestDay,
+                        }));
+                      },
+                    }
+                  );
+                }}
+                disabled={isUpdating}
+              >
+                {formData.isRestDay
+                  ? "Rustdag annuleren"
+                  : "Markeer als rustdag"}
+              </Button>
+              {dayData?.restDaysLeft !== undefined && (
+                <span className="text-sm text-muted-foreground">
+                  {dayData.restDaysLeft} rustdag
+                  {dayData.restDaysLeft === 1 ? "" : "en"} over
+                </span>
+              )}
+            </div>
             {!formData.isRestDay && (
               <Button type="submit" disabled={isUpdating}>
                 {isUpdating ? "Opslaan..." : "Opslaan"}

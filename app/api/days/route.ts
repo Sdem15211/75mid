@@ -18,19 +18,42 @@ export async function GET(request: NextRequest) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const day = await prisma.day.findUnique({
-      where: {
-        userId_date: {
-          userId,
-          date,
+    // Get both the day data and user data
+    const [day, user] = await Promise.all([
+      prisma.day.findUnique({
+        where: {
+          userId_date: {
+            userId,
+            date,
+          },
         },
-      },
-      include: {
-        completions: true,
-      },
-    });
+        include: {
+          completions: true,
+        },
+      }),
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { restDaysLeft: true },
+      }),
+    ]);
 
-    return Response.json(day);
+    // If there's no day data, return a properly structured null response
+    if (!day) {
+      return Response.json({
+        id: null,
+        date: null,
+        userId: null,
+        isRestDay: false,
+        isComplete: false,
+        completions: [],
+        restDaysLeft: user?.restDaysLeft,
+      });
+    }
+
+    return Response.json({
+      ...day,
+      restDaysLeft: user?.restDaysLeft,
+    });
   } catch (error) {
     console.error("Error in GET /api/days:", error);
     return Response.json({ error: "Internal Server Error" }, { status: 500 });
@@ -48,6 +71,33 @@ export async function POST(request: NextRequest) {
 
     if (userId !== session.user.id) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Get the current day to check if it was already a rest day
+    const existingDay = await prisma.day.findUnique({
+      where: {
+        userId_date: {
+          userId,
+          date: new Date(date),
+        },
+      },
+    });
+
+    // Get user to check rest days left
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return Response.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Check if trying to use a rest day when none are left
+    if (isRestDay && !existingDay?.isRestDay && user.restDaysLeft <= 0) {
+      return Response.json(
+        { error: "No rest days left to use" },
+        { status: 400 }
+      );
     }
 
     // Create or update the day
@@ -68,6 +118,19 @@ export async function POST(request: NextRequest) {
         isRestDay,
       },
     });
+
+    // Update rest days count if needed
+    if (isRestDay !== existingDay?.isRestDay) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          restDaysLeft: {
+            // Increment if removing rest day, decrement if adding rest day
+            [isRestDay ? "decrement" : "increment"]: 1,
+          },
+        },
+      });
+    }
 
     // Delete existing completions
     await prisma.taskCompletion.deleteMany({
@@ -113,7 +176,7 @@ export async function POST(request: NextRequest) {
       data: completions,
     });
 
-    // Fetch and return the updated day with completions
+    // Fetch and return the updated day with completions and rest days left
     const updatedDay = await prisma.day.findUnique({
       where: {
         id: day.id,
@@ -123,7 +186,16 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return Response.json(updatedDay);
+    // Get updated user for rest days count
+    const updatedUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { restDaysLeft: true },
+    });
+
+    return Response.json({
+      ...updatedDay,
+      restDaysLeft: updatedUser?.restDaysLeft,
+    });
   } catch (error) {
     console.error("Error in POST /api/days:", error);
     return Response.json({ error: "Internal Server Error" }, { status: 500 });
