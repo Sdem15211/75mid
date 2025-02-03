@@ -1,40 +1,37 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { TASK_LABELS } from "@/lib/challenge-utils";
+import { useFriendsData } from "@/lib/hooks/use-friends-data";
 
 interface FriendActivityProps {
   currentDay: number;
 }
 
-// Mock data
-const mockFriends = [
-  {
-    id: 1,
-    name: "Anna de Vries",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anna",
-    completedTasks: 7,
-    totalTasks: 7,
-    isRestDay: false,
-  },
-  {
-    id: 2,
-    name: "Peter Jansen",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Peter",
-    completedTasks: 4,
-    totalTasks: 7,
-    isRestDay: false,
-  },
-  {
-    id: 3,
-    name: "Sophie Bakker",
-    image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie",
-    completedTasks: 0,
-    totalTasks: 0,
-    isRestDay: true,
-  },
-];
-
 export function FriendActivity({ currentDay }: FriendActivityProps) {
+  const { data: users, isLoading } = useFriendsData();
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold">Vrienden Activiteit</h2>
+          <p className="text-sm text-muted-foreground">Laden...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -46,34 +43,113 @@ export function FriendActivity({ currentDay }: FriendActivityProps) {
 
       <ScrollArea className="pr-4">
         <div className="space-y-4">
-          {mockFriends.map((friend) => (
-            <div
-              key={friend.id}
-              className="flex items-center justify-between p-4 rounded-lg border"
-            >
-              <div className="flex items-center space-x-4">
-                <Avatar>
-                  <AvatarImage src={friend.image} alt={friend.name} />
-                  <AvatarFallback>
-                    {friend.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">{friend.name}</p>
-                  {friend.isRestDay ? (
-                    <Badge variant="secondary">Rustdag</Badge>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      {friend.completedTasks}/{friend.totalTasks} taken voltooid
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+          {users?.map((user) => {
+            const completedTasks =
+              user.day?.completions.filter((c) => c.completed).length ?? 0;
+            const totalTasks = Object.keys(TASK_LABELS).length;
+
+            return (
+              <Collapsible key={user.id}>
+                <CollapsibleTrigger className="w-full">
+                  <Card className="w-full transition-colors hover:bg-muted/50">
+                    <div className="flex items-center justify-between p-4">
+                      <div className="flex items-center space-x-4">
+                        <Avatar>
+                          <AvatarImage
+                            src={user.image ?? undefined}
+                            alt={user.name ?? ""}
+                            referrerPolicy="no-referrer"
+                          />
+                          <AvatarFallback>
+                            {user.name
+                              ?.split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{user.name}</p>
+                          {user.day?.isRestDay ? (
+                            <Badge variant="secondary">
+                              Gemarkeerd als rustdag
+                            </Badge>
+                          ) : (
+                            <p className="text-sm text-muted-foreground">
+                              {completedTasks}/{totalTasks} taken voltooid
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                    </div>
+                  </Card>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <Card className="mt-2 p-4 border-dashed">
+                    {user.day?.isRestDay ? (
+                      <p className="text-sm text-muted-foreground text-center py-2">
+                        Rustdag
+                      </p>
+                    ) : (
+                      <div className="space-y-4">
+                        {/* Workouts with notes */}
+                        <div className="space-y-4">
+                          {user.day?.completions
+                            .filter((task) =>
+                              task.taskType.startsWith("WORKOUT")
+                            )
+                            .map((task) => (
+                              <div key={task.taskType} className="space-y-2">
+                                <div className="flex items-start gap-2">
+                                  <Checkbox checked={task.completed} disabled />
+                                  <div className="space-y-1">
+                                    <label className="text-sm font-medium">
+                                      {
+                                        TASK_LABELS[
+                                          task.taskType as keyof typeof TASK_LABELS
+                                        ]
+                                      }
+                                    </label>
+                                    {task.notes && (
+                                      <p className="text-sm text-muted-foreground">
+                                        {task.notes}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+
+                        {/* Other tasks */}
+                        <div className="space-y-2">
+                          {user.day?.completions
+                            .filter(
+                              (task) => !task.taskType.startsWith("WORKOUT")
+                            )
+                            .map((task) => (
+                              <div
+                                key={task.taskType}
+                                className="flex items-center gap-2"
+                              >
+                                <Checkbox checked={task.completed} disabled />
+                                <label className="text-sm">
+                                  {
+                                    TASK_LABELS[
+                                      task.taskType as keyof typeof TASK_LABELS
+                                    ]
+                                  }
+                                </label>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+                  </Card>
+                </CollapsibleContent>
+              </Collapsible>
+            );
+          })}
         </div>
       </ScrollArea>
     </div>
