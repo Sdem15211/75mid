@@ -15,19 +15,6 @@ export default async function DashboardPage() {
   const today = startOfDay(new Date());
   const currentDay = getDayNumber(today) ?? 1;
 
-  // Fetch today's data on the server
-  const initialDayData = await prisma.day.findUnique({
-    where: {
-      userId_date: {
-        userId: session.user.id,
-        date: today,
-      },
-    },
-    include: {
-      completions: true,
-    },
-  });
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -61,11 +48,7 @@ export default async function DashboardPage() {
           {/* Main content area */}
           <div className="flex-1">
             <div className="p-6 rounded-lg border bg-card">
-              <DailyChecklist
-                initialDate={today}
-                // initialData={initialDayData}
-                userId={session.user.id}
-              />
+              <DailyChecklist initialDate={today} userId={session.user.id} />
             </div>
           </div>
 
