@@ -84,11 +84,11 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">
+        <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+          <h2 className="text-2xl font-bold text-center sm:text-left">
             {dayNumber ? `Dag ${dayNumber}` : "Buiten challenge periode"}
           </h2>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             <Button
               variant="outline"
               size="icon"
@@ -98,7 +98,7 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="text-sm text-muted-foreground min-w-[180px] text-center">
+            <span className="text-sm text-muted-foreground min-w-[140px] sm:min-w-[180px] text-center">
               {format(date, "EEEE d MMMM")}
               {isToday && " (vandaag)"}
             </span>
@@ -268,17 +268,15 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
         ) : (
           <Card className="p-6">
             <div className="text-center space-y-2">
-              <h3 className="text-lg font-semibold">Rustdag</h3>
-              <p className="text-sm text-muted-foreground">
-                Morgen weer verder! 💪
-              </p>
+              <h3 className="text-lg font-semibold">LOSER</h3>
+              <p className="text-sm text-muted-foreground">Morgen beter 🙏🏼</p>
             </div>
           </Card>
         )}
 
         {isWithinPeriod && (
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-between sm:items-center">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
               <Button
                 type="button"
                 variant="outline"
@@ -301,7 +299,6 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
                             description: response.error,
                             variant: "destructive",
                           });
-                          // Revert the state change on error
                           setFormData((prev) => ({
                             ...prev,
                             isRestDay: !prev.isRestDay,
@@ -332,7 +329,6 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
                               : "De wijziging kon niet worden opgeslagen. Probeer het opnieuw.",
                           variant: "destructive",
                         });
-                        // Revert the state change on error
                         setFormData((prev) => ({
                           ...prev,
                           isRestDay: !prev.isRestDay,
@@ -342,20 +338,25 @@ export function DailyChecklist({ initialDate, userId }: DailyChecklistProps) {
                   );
                 }}
                 disabled={isUpdating}
+                className="w-full sm:w-auto"
               >
                 {formData.isRestDay
                   ? "Rustdag annuleren"
                   : "Markeer als rustdag"}
               </Button>
               {dayData?.restDaysLeft !== undefined && (
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-muted-foreground text-center">
                   {dayData.restDaysLeft} rustdag
                   {dayData.restDaysLeft === 1 ? "" : "en"} over
                 </span>
               )}
             </div>
             {!formData.isRestDay && (
-              <Button type="submit" disabled={isUpdating}>
+              <Button
+                type="submit"
+                disabled={isUpdating}
+                className="w-full sm:w-auto"
+              >
                 {isUpdating ? "Opslaan..." : "Opslaan"}
               </Button>
             )}

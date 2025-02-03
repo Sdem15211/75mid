@@ -3,6 +3,7 @@ import { DailyChecklist } from "@/components/dashboard/daily-checklist";
 import { FriendActivity } from "@/components/dashboard/friend-activity";
 import { SignOutButton } from "@/components/auth/signout-button";
 import { DeleteAccountButton } from "@/components/auth/delete-account-button";
+import { UserAvatar } from "@/components/auth/user-avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Trophy } from "lucide-react";
 import { getDayNumber } from "@/lib/challenge-utils";
@@ -29,6 +30,7 @@ export default async function DashboardPage() {
             <ThemeToggle />
             <DeleteAccountButton />
             <SignOutButton />
+            <UserAvatar user={session.user} />
           </div>
         </div>
       </header>

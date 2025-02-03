@@ -1,26 +1,30 @@
 import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Trophy } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default async function Home() {
   const session = await auth();
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-beige">
-      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-lg">
-        <div className="text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight text-green">
-            75 Mid Challenge
+    <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-2 text-center">
+          <div className="flex justify-center">
+            <Trophy className="h-12 w-12 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-4xl">
+            75 MID Challenge
           </h1>
-        </div>
-        <Button asChild>
-          <Link
-            href={session?.user ? "/dashboard" : "/login"}
-            className="group transition-all duration-300 relative flex w-full justify-center rounded-md bg-green px-4 py-2 text-sm font-extrabold text-white hover:bg-darkGreen/80 focus:outline-none focus:ring-2 focus:ring-green focus:ring-offset-2"
-          >
-            {session?.user ? "Dashboard" : "Login"}
-          </Link>
-        </Button>
-      </div>
+        </CardHeader>
+        <CardContent className="flex justify-center">
+          <Button asChild className="w-full sm:w-[200px]">
+            <Link href={session?.user ? "/dashboard" : "/login"}>
+              {session?.user ? "Dashboard" : "Login"}
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
     </main>
   );
 }
