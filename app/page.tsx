@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 

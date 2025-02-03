@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 import { DailyChecklist } from "@/components/dashboard/daily-checklist";
 import { FriendActivity } from "@/components/dashboard/friend-activity";
 import { SignOutButton } from "@/components/auth/signout-button";
@@ -6,7 +6,6 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Trophy } from "lucide-react";
 import { getDayNumber } from "@/lib/challenge-utils";
 import { startOfDay } from "date-fns";
-import prisma from "@/lib/db";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -21,7 +20,7 @@ export default async function DashboardPage() {
       <header className="border-b px-8 py-4 mx-auto">
         <div className="flex items-center justify-between">
           <h1 className="text-xl tracking-tight font-semibold flex items-center">
-            <Trophy className="w-4 h-4 mr-2" />
+            <Trophy className="w-4 h-4 mr-2 text-green" />
             75MID
           </h1>
           <div className="flex items-center gap-2">

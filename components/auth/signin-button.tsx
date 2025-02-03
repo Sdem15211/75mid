@@ -1,4 +1,4 @@
-import { signIn } from "@/auth";
+import { signIn } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 
 export default function GoogleSignInButton() {

@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 import { TaskType, isWithinChallengePeriod } from "@/lib/challenge-utils";
 import { revalidatePath } from "next/cache";
 import { TaskCompletion } from "@prisma/client";

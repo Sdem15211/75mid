@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { TaskType } from "@prisma/client";
 import { NextRequest } from "next/server";

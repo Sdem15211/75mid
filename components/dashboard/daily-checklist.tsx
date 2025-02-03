@@ -21,13 +21,6 @@ import {
   FormData,
 } from "@/lib/hooks/use-day-data";
 
-type WorkoutData = {
-  completed: boolean;
-  description: string;
-};
-
-type OtherTaskType = "WATER_INTAKE" | "READING" | "HEALTHY_DIET" | "SLEEP_GOAL";
-
 interface DailyChecklistProps {
   initialDate: Date;
   userId: string;
