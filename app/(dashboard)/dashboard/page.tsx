@@ -6,15 +6,14 @@ import { DeleteAccountButton } from "@/components/auth/delete-account-button";
 import { UserAvatar } from "@/components/auth/user-avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Trophy } from "lucide-react";
-import { getDayNumber } from "@/lib/challenge-utils";
-import { startOfDay } from "date-fns";
+import { getDayNumber, normalizeToUTCDay } from "@/lib/challenge-utils";
 import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user?.id) return redirect("/login");
 
-  const today = startOfDay(new Date());
+  const today = normalizeToUTCDay(new Date());
   const currentDay = getDayNumber(today) ?? 1;
 
   return (

@@ -69,11 +69,17 @@ export function useDayData(
   userId: string,
   initialData?: DayData | null
 ) {
+  const normalizedDate = normalizeToUTCDay(date).toISOString();
+  const normalizedInitialDate = initialData?.date
+    ? normalizeToUTCDay(new Date(initialData.date)).toISOString()
+    : null;
+
   return useQuery({
-    queryKey: ["day", normalizeToUTCDay(date).toISOString(), userId],
+    queryKey: ["day", normalizedDate, userId],
     queryFn: () => fetchDayData(date, userId),
     enabled: !!userId,
-    initialData,
+    initialData:
+      normalizedDate === normalizedInitialDate ? initialData : undefined,
   });
 }
 
