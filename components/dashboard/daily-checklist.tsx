@@ -57,10 +57,12 @@ export function DailyChecklist({
     transformDayDataToFormData(initialDayData ?? null)
   );
 
-  // Update form data when dayData changes
+  // Update form data when dayData changes or when loading completes
   useEffect(() => {
-    setFormData(transformDayDataToFormData(dayData ?? null));
-  }, [dayData]);
+    if (!isLoading) {
+      setFormData(transformDayDataToFormData(dayData ?? null));
+    }
+  }, [dayData, isLoading]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
